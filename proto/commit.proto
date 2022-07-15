@@ -1,0 +1,14 @@
+syntax = "proto3";
+import "objects.proto";
+package google.gink;
+
+
+message Commit {
+    uint64 timestamp = 1;
+    uint64 medallion = 2;
+    uint64 previous_timestamp = 3;
+    string comment = 4;
+    uint64 chain_start = 5;
+    map<uint32, Obj> objects = 8; // key is offset number (> 0 and < 2**20)
+}
+

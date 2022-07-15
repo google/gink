@@ -1,0 +1,193 @@
+
+syntax = "proto3";
+package google.gink;
+
+message ValueSpec {
+    enum BasicType {
+        ANY = 0;
+        BOOL = 1;
+        BYTES = 2;
+        JSON = 3;
+        ENUM = 4;
+        STRING = 5;
+        NUMBER = 6;
+        INTEGER = 7;
+        BIGINT = 8;
+        FLOAT = 9;
+        DOUBLE = 10;
+        DECIMAL = 11;
+        TIMESTAMP = 12;
+        DATE = 13;
+        TIME = 14;
+        DATETIME = 15;
+    }
+    oneof {
+        BasicType basic_type = 1;
+        Muid compound_type = 4;
+        Value computed_expr = 5;
+    }
+    bool not_null = 2;
+    bool is_array = 3;
+}
+
+message RowSpec {
+    map<uint32,string> names = 2;
+    map<uint32,ValueSpec> value_specs = 3;
+}
+
+message Row {
+    oneof mask { // a bitmask indicating which columns are present
+        uint64 integer_mask = 1; 
+        bytes bytes_mask = 2; // only for when you have more than 63 columns
+    }
+    repeated Value values = 3;
+}
+
+enum Special {
+    NULL = 0;
+    TRUE = 1;
+    FALSE = 2;
+}
+
+message Value {
+    Muid description = 14;
+    oneof value {
+        Special special = 1;
+        uint64 enum_value = 2;
+        string characters = 3;
+        Number number = 4;
+        Timestamp timestamp = 5;
+        Date date = 6;
+        Time time = 7;
+        bytes octects = 8;
+        Tuple tuple = 11;
+        Document document = 12;
+        string symbol = 13;
+        Invocation invocation = 15;
+        bytes uuid = 16;
+        Muid muid = 17;
+        Complex complex = 18;
+        Zone timezone = 19;
+        DateTime datetime = 20;
+        ZonedDateTime zoned = 21;
+        Interval interval = 22;
+    }
+}
+
+message Timestamp {
+    bool negative = 1;
+    uint64 seconds = 2;
+    uint64 millis = 3;
+    uint64 micros = 4;
+    uint64 nanos = 5;
+}
+
+message Tuple {
+    repeated Value values = 1;
+    repeated string names = 2; // optional, doesn't impact comparisons
+}
+
+message Document {
+    // keys and values must be the same length
+    repeated Value keys = 1;
+    repeated Value values = 2;
+}
+
+message Invocation {
+    string func = 1;
+    repeated Value ordered = 2;
+    map<string, Value> keyed = 3;
+}
+
+message Complex {
+    Number real = 1;
+    Number imag = 2;
+}
+
+message Number {
+    enum Constant {
+        ZERO = 0;
+        I = 1;
+        E = 2;
+        PI = 3;
+    }
+    oneof encoded {
+        sint32 integer = 1;
+        sint64 bigint = 2;
+        float floating = 3;
+        double doubled = 4;
+        Constant constant = 5;
+        Decimal decimal = 6;
+        Fraction fraction = 7;
+        uint32 uint = 8;
+        uint64 ubig = 9;
+        sint64 billionths = 10;
+    }
+}
+
+message Fraction {
+    bool negative = 1;
+    uint64 int_part = 2;
+    uint64 numerator = 3;
+    uint64 denominator = 4;
+}
+
+message Decimal {
+    sint64 int = 1;
+    uint64 upp = 2;
+    sint32 ee = 10;
+}
+
+message Date {
+    uint32 year = 1;
+    uint32 month = 2;
+    uint32 day = 3;
+}
+
+message Time {
+    uint32 hour = 1;
+    uint32 minute = 2;
+    uint32 second = 3;
+    uint32 milli = 4;
+    uint32 micro = 5;
+    uint32 nano = 6;
+}
+
+message Zone {
+    oneof zone {
+        ZoneOffset offset = 1;
+        string full_name = 2; // e.g. "America/New_York"
+        string abbreviation = 3; // e.g. "PST"
+    }
+}
+
+message ZoneOffset {
+    bool minus = 1;
+    uint32 hours = 2;
+    uint32 minutes = 3;
+}
+
+message Interval {
+    bool minus = 1;
+    uint64 hours = 2;
+    uint64 minutes = 3;
+    uint64 seconds = 4;
+    uint64 millis = 5;
+    uint64 micros = 6;
+    uint64 nanos = 7;
+    uint64 days = 8;
+    uint64 months = 9;
+    uint64 years = 10;
+}
+
+message DateTime {
+    Date date = 1;
+    Time time = 2;
+}
+
+message ZonedDateTime {
+    Date date = 1;
+    Time time = 2;
+    Zone zone = 3;
+}
+

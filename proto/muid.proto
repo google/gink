@@ -1,10 +1,4 @@
 syntax = "proto3";
-package google.gink;
-
-/*
-    Any integer field marked "timestamp" or "expiry" in this file should be
-    assumed to be epoch microseconds.
-*/
 
 /**
     Muid: Generally corresponds to the object-id for an object in the
@@ -28,22 +22,3 @@ message Muid {
     uint64 medallion = 2; // less than 2**52, version 1 between 2**48 and 2**49
     uint32 offset = 3; // less than 2**20
 }
-
-message Commit {
-    uint64 timestamp = 1;
-    uint64 medallion = 2;
-    uint64 previous_timestamp = 3;
-    string comment = 4;
-    uint64 chain_start = 5;
-    map<uint32, Obj> objects = 8; // key is offset number (> 0 and < 2**20)
-}
-
-message Obj {
-    oneof body {
-        Node node = 1;
-    }
-}
-
-message Node {
-}
-

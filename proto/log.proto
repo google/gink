@@ -1,0 +1,38 @@
+
+syntax = "proto3";
+package google.gink;
+
+/**
+    This proto is only used in the typescript/javascript implementation.
+    Currently that implementation just uses an append-only logfile and
+    re-reads it on startup everytime rather than using something more
+    structured.
+*/
+message LogFile {
+    /**
+        The writer must ensure that all commits per chain are in order
+        and that there are no gaps in any of the chains.  Storing the
+        bytes of the commit so that it's forward compatible and doesn't
+        drop unknown proto fields.
+    */
+    repeated bytes commits = 1;
+
+    /**
+        Each database instance may have one or more chains that it
+        can append commits to.  The ChainEntry object keeps track
+        of what chains are active.  Once a chain has been ended
+        ended no more additions should be made to it.
+
+        When a chain is started, a tuple of (medallion, chain_start, 0)
+        will be added.  When the chain is closed, a tuple with a non-zero
+        chain_end will be appended to mark that that chain has finished.
+
+        Globally, no more than one chain per medallion may be active once.
+    */
+    message ChainEntry {
+        uint64 medallion = 1;
+        uint64 chain_start = 2;
+        uint64 chain_end = 3;
+    }
+    repeated ChainEntry chain_entries = 2;
+}

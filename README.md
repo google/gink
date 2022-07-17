@@ -24,3 +24,26 @@ network disconnects). The “mergeable” multi-master capability will unlock ne
 architecture options for edge computing and dynamic database scaling.
 
 This is not an officially supported Google product.
+
+# Installing Required Dependencies on Linux
+
+For the typescript implementation, this will install the system dependencies.
+```
+sudo apt-get install -y npm protobuf-compiler
+sudo npm install -g ts-node
+```
+
+Inside the local copy of the repo, install the required npm packages with:
+```
+npm install
+```
+
+# Compile Proto Files
+```
+make
+```
+
+# Testing
+```
+npm run test
+```

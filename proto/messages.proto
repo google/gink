@@ -1,0 +1,18 @@
+syntax = "proto3";
+package google.gink;
+
+message Greeting {
+    message GreetingEntry {
+        uint64 medallion = 1; 
+        uint64 chain_start = 2; 
+        uint64 seen_through = 3;
+    }
+    repeated GreetingEntry entries = 1;
+}
+
+message Message {
+    oneof contents {
+        bytes commit = 1; // bytes so it's easy to save verbatim.
+        Greeting greeting = 2;
+    }
+}
